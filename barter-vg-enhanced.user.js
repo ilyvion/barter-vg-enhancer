@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Barter.vg enhancer
 // @namespace    https://alexanderschroeder.net/
-// @version      0.1
+// @version      0.2
 // @description  Summarizes and compares all attributes in an offer for easy comparison of offer value
 // @author       Alexander Krivács Schrøder
 // @downloadURL  https://alexanderschroeder.net/userscripts/barter-vg-enhancer.user.js
@@ -83,6 +83,28 @@
         return fraction;
     }
 
+    function getFractions(ratio) {
+        var realFraction = realToFraction(ratio, 0.000001);
+        var smallFraction = getApproximateSmallestFraction($.extend({}, realFraction));
+        var smallestFraction = {n: 1, d: Math.trunc(smallFraction.d / smallFraction.n)};
+        var digits = Math.trunc(Math.log10(smallestFraction.d));
+        var rounded;
+        if (digits > 1) {
+            rounded = Math.round(smallestFraction.d / Math.pow(10, digits)) * Math.pow(10, digits);
+        } else {
+            rounded = Math.round(smallestFraction.d / 10) * 10;
+            if (rounded === 0) rounded = 1;
+        }
+        var roundedFraction = {n: 1, d: rounded};
+
+        return {
+            real: realFraction,
+            small : smallFraction,
+            smallest: smallestFraction,
+            rounded: roundedFraction
+        };
+    }
+
     var steamAppIdRegEx = /\/app\/(\d+)\//;
     var reviewScoreRegEx = /(\d+)% positive of (\d+) user reviews/;
     var tradeableRegEx = /(\d+) Barter.vg users have this tradable/;
@@ -95,26 +117,31 @@
         var whose = $(tradeable).find('legend strong').html();
 
         var gameList = $(tradeable).find('.tradables_items_list li');
-        console.log(gameList);
         var games = $.map(gameList, function(gameListEntry) {
             var gameName = $(gameListEntry).find('> strong > a').html();
             var reviewBox = $(gameListEntry).find('a[href*="#app_reviews_hash"]');
-            if (reviewBox.length === 0) {
-                console.error("Could not extract data about " + gameName);
-                return null;
-            }
-            var steamAppId = reviewBox[0].pathname.match(steamAppIdRegEx)[1];
-            var reviewScoreData = reviewBox.find('> abbr')[0].title.match(reviewScoreRegEx);
-            var reviewPercentage = reviewScoreData[1];
-            var reviewerCount = reviewScoreData[2];
 
-            var gameInfoLine = reviewBox.parent();
+            var steamAppId = null;
+            var reviewPercentage = null;
+            var reviewerCount = null;
+            var gameInfoLine;
+            var hasReviewCount = false;
+            if (reviewBox.length === 0) {
+                gameInfoLine = $(gameListEntry).find('a[title="Steam store page"]').parent().parent();
+            } else {
+                steamAppId = reviewBox[0].pathname.match(steamAppIdRegEx)[1];
+                var reviewScoreData = reviewBox.find('> abbr')[0].title.match(reviewScoreRegEx);
+                reviewPercentage = reviewScoreData[1];
+                reviewerCount = reviewScoreData[2];
+                gameInfoLine = reviewBox.parent();
+                hasReviewCount = true;
+            }
+
             var gameInfoChildren = gameInfoLine.children();
-            var hasStoreTag = gameInfoChildren[0].tagName === 'ABBR';
-            var startIndex = hasStoreTag ? 2 : 1;
+            var hasStoreTag = gameInfoChildren[0].tagName === 'ABBR' && gameInfoChildren[0].children.length > 0;
+            var startIndex = (hasStoreTag ? 2 : 1) - (hasReviewCount ? 0 : 1);
             var tradeableCount = gameInfoChildren[startIndex].title.match(tradeableRegEx)[1];
             var wishlistCount = gameInfoChildren[startIndex + 1].title.match(wishlistRegEx)[1];
-
             var isBundled = gameInfoChildren[startIndex + 2].tagName !== 'ABBR';
             var bundleCount = 0;
             var bundles = [];
@@ -163,48 +190,30 @@
 
         gameStats.averageReviewScore = Number((gameStats.averageReviewScore / gameStats.games).toFixed(0));
         gameStats.averageWeightedReviewScore = Number((gameStats.averageWeightedReviewScore / gameStats.voteCount).toFixed(0));
-        delete gameStats.voteCount;
         var tradeRatio = gameStats.totalTradeable / gameStats.totalWishlist;
+        var fractions;
         if (tradeRatio < 1) {
-            var fraction = realToFraction(tradeRatio, 0.000001);
-            gameStats.tradeRatio = fraction.n + " : " + fraction.d;
-            var fraction3 = getApproximateSmallestFraction($.extend({}, fraction));
-            if (fraction.d !== fraction3.d && fraction.n !== fraction3.n) {
-                gameStats.tradeRatioSmall = "(~" + fraction3.n + " : " + fraction3.d + ")";
-            } else {
-                gameStats.tradeRatioSmall = "";
-            }
+            fractions = getFractions(tradeRatio);
+            gameStats.tradeRatioRounded = fractions.rounded.n + " : " + fractions.rounded.d;
+            gameStats.tradeRatioActual = fractions.real.n + " : " + fractions.real.d;
+            gameStats.tradeRatioSmallest = fractions.smallest.n + " : " + fractions.smallest.d;
         } else if (tradeRatio > 1) {
-            var fraction2 = realToFraction(1 / tradeRatio, 0.000001);
-            gameStats.tradeRatio = fraction2.d + " : " + fraction2.n;
-            var fraction4 = getApproximateSmallestFraction($.extend({}, fraction2));
-            if (fraction2.d !== fraction4.d && fraction2.n !== fraction4.n) {
-                gameStats.tradeRatioSmall = "(~" + fraction4.d + " : " + fraction4.n + ")";
-            } else {
-                gameStats.tradeRatioSmall = "";
-            }
+            fractions = getFractions(1 / tradeRatio);
+            gameStats.tradeRatioRounded = fractions.rounded.d + " : " + fractions.rounded.n;
+            gameStats.tradeRatioActual = fractions.real.d + " : " + fractions.real.n;
+            gameStats.tradeRatioSmallest = fractions.smallest.d + " : " + fractions.smallest.n;
         } else {
-            gameStats.tradeRatio = "1 : 1";
-            gameStats.tradeRatioSmall = "";
+            gameStats.tradeRatioRounded = gameStats.tradeRatioActual = gameStats.tradeRatioSmallest = "1 : 1";
         }
 
         var tradeSummary =
             '<p>Trade summary:</p>\
              <table>\
                <tr>\
-                 <th>Games</th><td>{0}</td>\
-               </tr>\
-               <tr>\
                  <th>Games in bundles</th><td>{1}</td>\
                </tr>\
                <tr>\
                  <th>Total bundles</th><td>{8}</td>\
-               </tr>\
-               <tr>\
-                 <th>Total tradeable</th><td>{2}</td>\
-               </tr>\
-               <tr>\
-                 <th>Total wishlisted</th><td>{3}</td>\
                </tr>\
                <tr>\
                  <th>Average review score</th><td>{4}%</td>\
@@ -213,7 +222,10 @@
                  <th><span title="The more reviews it has, the proportionally larger that game\'s impact on the score" style="border-bottom: dotted 1px; cursor: help; font-size: 16px;">Average weighted review score</th><td>{5}%</td>\
                </tr>\
                <tr>\
-                 <th>Trade ratio (H : W)</th><td>{6} {7}</td>\
+                 <th>Number of reviews (log<sub>2</sub>)</th><td>{10} ({11})</td>\
+               </tr>\
+               <tr>\
+                 <th>Trade ratio (H : W)</th><td>rounded: {6},<br>small: {7},<br>actual: {9}</span</td>\
                </tr>\
              </table>'.format(
             gameStats.games,
@@ -222,9 +234,12 @@
             gameStats.totalWishlist,
             gameStats.averageReviewScore,
             gameStats.averageWeightedReviewScore,
-            gameStats.tradeRatio,
-            gameStats.tradeRatioSmall,
-            gameStats.totalBundles);
+            gameStats.tradeRatioRounded,
+            gameStats.tradeRatioSmallest,
+            gameStats.totalBundles,
+            gameStats.tradeRatioActual,
+            gameStats.voteCount,
+            Math.log(gameStats.voteCount).toFixed(2));
 
         if (first) {
             $(tradeable).after(tradeSummary);
@@ -232,6 +247,5 @@
         } else {
             $(tradeable).before(tradeSummary);
         }
-        console.log(gameStats);
     });
 })();
