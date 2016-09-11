@@ -239,7 +239,7 @@
             gameStats.totalBundles,
             gameStats.tradeRatioActual,
             gameStats.voteCount,
-            Math.log(gameStats.voteCount).toFixed(2));
+            (Math.log(gameStats.voteCount) / Math.log(2)).toFixed(2));
 
         if (first) {
             $(tradeable).after(tradeSummary);
