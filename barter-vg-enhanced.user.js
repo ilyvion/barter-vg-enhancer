@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Barter.vg enhancer
 // @namespace    https://alexanderschroeder.net/
-// @version      0.3
+// @version      0.3.1
 // @description  Summarizes and compares all attributes in an offer for easy comparison of offer value
 // @homepage     https://github.com/alexschrod/barter-vg-enhancer
 // @author       Alexander Krivács Schrøder
@@ -239,6 +239,7 @@
         }
 
         var cb = function(success, response) {
+            console.debug("Steam Result", response);
             if (success) {
                 $.each(response.data, function(key, datum) {
                     gamePrices[key] = {
@@ -256,6 +257,7 @@
                 callback(false, null);
             }
         };
+        console.debug("Steam URL", url);
         makeHttpGetRequest(url, cb);
     }
 
@@ -264,6 +266,7 @@
     var tradeableRegEx = /(\d+) Barter.vg users have this tradable/;
     var wishlistRegEx = /(\d+) Barter.vg users wishlisted this game/;
     var bundleRegEx = /(\d+) bundles?: (.*)/;
+    var storePageRegEx = /http:\/\/store\.steampowered\.com\/app\/(\d+)\//;
 
     var tradeables = $('.tradables');
     var first = true;
@@ -273,9 +276,9 @@
     $.each(tradeables, function(_, tradeable) {
         var whose = $(tradeable).find('legend strong').html();
 
-        var gameList = $(tradeable).find('.tradables_items_list li');
+        var gameList = $(tradeable).find('.tradables_items_list li:not(.bold)');
         var games = $.map(gameList, function(gameListEntry) {
-            var gameName = $(gameListEntry).find('> strong > a').html();
+            var gameName = $(gameListEntry).find('> strong > a,a:first-of-type').html();
             var reviewBox = $(gameListEntry).find('a[href*="#app_reviews_hash"]');
 
             var steamAppId = null;
@@ -284,7 +287,12 @@
             var gameInfoLine;
             var hasReviewCount = false;
             if (reviewBox.length === 0) {
-                gameInfoLine = $(gameListEntry).find('a[title="Steam store page"]').parent().parent();
+                var storePage = $(gameListEntry).find('a[title="Steam store page"]');
+                if (storePage.length > 0) {
+                    var storePageMatch = storePage[0].href.match(storePageRegEx);
+                    steamAppId = storePageMatch[1];
+                }
+                gameInfoLine = storePage.parent().parent();
             } else {
                 steamAppId = reviewBox[0].pathname.match(steamAppIdRegEx)[1];
                 var reviewScoreData = reviewBox.find('> abbr')[0].title.match(reviewScoreRegEx);
