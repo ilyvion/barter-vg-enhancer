@@ -265,6 +265,8 @@
         makeHttpGetRequest(url, cb);
     }
 
+    $('.tradables_info a:first-child, .tradables_info div:nth-child(3)').css("width", "230px");
+
     var steamAppIdRegEx = /\/app\/(\d+)\//;
     var reviewScoreRegEx = /(\d+)% positive of (\d+) user reviews/;
     var tradeableRegEx = /(\d+) Barter.vg users have this tradable/;
