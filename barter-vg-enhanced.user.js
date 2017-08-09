@@ -222,7 +222,7 @@
             }
             steamAppIds.splice(index, 1);
         });
-        if (steamAppIds.length === 0) {
+        if (steamAppIds.length === 0 || (steamAppIds.length === 1 && steamAppIds[0] === null)) {
             console.debug("all prices cached, no API call necessary!");
             callback(true, gamePrices);
             return;
@@ -242,6 +242,10 @@
             console.debug("Steam Result", response);
             if (success) {
                 $.each(response.data, function(key, datum) {
+                    if (!datum.success) {
+                        console.debug("Getting prices for " + key + " failed!");
+                        return;
+                    }
                     gamePrices[key] = {
                         prices: datum.data.price_overview
                     };
@@ -290,7 +294,9 @@
                 var storePage = $(gameListEntry).find('a[title="Steam store page"]');
                 if (storePage.length > 0) {
                     var storePageMatch = storePage[0].href.match(storePageRegEx);
-                    steamAppId = storePageMatch[1];
+                    if (storePage.length > 1) {
+                        steamAppId = storePageMatch[1];
+                    }
                 }
                 gameInfoLine = storePage.parent().parent();
             } else {
@@ -473,9 +479,11 @@
             if (currency === null && typeof currentValue.price.currency !== 'undefined') {
                 currency = currentValue.price.currency;
             }
+            if (typeof currentValue.price === 'undefined') return previousValue;
             return previousValue + currentValue.price.initial;
         }, 0);
         var offeredDiscountedTotal = offeredGames.reduce(function(previousValue, currentValue, currentIndex, array) {
+            if (typeof currentValue.price === 'undefined') return previousValue;
             return previousValue + currentValue.price.final;
         }, 0);
 
@@ -483,9 +491,11 @@
             if (currency === null && typeof currentValue.price.currency !== 'undefined') {
                 currency = currentValue.price.currency;
             }
+            if (typeof currentValue.price === 'undefined') return previousValue;
             return previousValue + currentValue.price.initial;
         }, 0);
         var requestedDiscountedTotal = requestedGames.reduce(function(previousValue, currentValue, currentIndex, array) {
+            if (typeof currentValue.price === 'undefined') return previousValue;
             return previousValue + currentValue.price.final;
         }, 0);
 
