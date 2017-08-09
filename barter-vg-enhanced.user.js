@@ -449,6 +449,26 @@
             return;
         }
         $.each(allGames, function(_, game) {
+            if (game.steamAppId === null) return;
+
+            var tradeRatio = game.tradeable / game.wishlist;
+            var fractions;
+            var tradeRatioRounded, tradeRatioActual, tradeRatioSmallest;
+            if (tradeRatio < 1) {
+                fractions = getFractions(tradeRatio);
+                tradeRatioRounded = fractions.rounded.n + " : " + fractions.rounded.d;
+                tradeRatioActual = fractions.real.n + " : " + fractions.real.d;
+                tradeRatioSmallest = fractions.smallest.n + " : " + fractions.smallest.d;
+            } else if (tradeRatio > 1) {
+                fractions = getFractions(1 / tradeRatio);
+                tradeRatioRounded = fractions.rounded.d + " : " + fractions.rounded.n;
+                tradeRatioActual = fractions.real.d + " : " + fractions.real.n;
+                tradeRatioSmallest = fractions.smallest.d + " : " + fractions.smallest.n;
+            } else {
+                tradeRatioRounded = gameStats.tradeRatioActual = gameStats.tradeRatioSmallest = "1 : 1";
+            }
+            var gameElement = game.element;
+            
             if (game.steamAppId in gamePrices) {
                 var gamePrice = gamePrices[game.steamAppId].prices;
                 if (typeof gamePrice === 'undefined') {
@@ -459,18 +479,18 @@
                     };
                 }
                 game.price = gamePrice;
-                var gameElement = game.element;
                 $(gameElement).css("position", "relative");
                 if (gamePrice.final === 0) {
-                    $(gameElement).append('<div style="position: absolute; top: 0; right: 15px;">Steam Store Price: Free</div>');
+                    $(gameElement).append('<div style="position: absolute; top: 0; right: 15px;">Steam Store Price: Free<br>Ratio: {0}</div>'.format(tradeRatioSmallest));
                 } else {
-                    $(gameElement).append('<div style="position: absolute; top: 0; right: 15px;">Steam Store Price: {0} {1}</div>'
+                    $(gameElement).append('<div style="position: absolute; top: 0; right: 15px;">Steam Store Price: {0} {1}<br>Ratio: {2}</div>'
                                           .format(gamePrice.currency, gamePrice.discount_percent === 0 ?
                                                   gamePrice.final / 100.0 :
-                                                  "{0} ({1}% off)".format(gamePrice.final / 100.0, gamePrice.discount_percent)));
+                                                  "{0} ({1}% off)".format(gamePrice.final / 100.0, gamePrice.discount_percent), tradeRatioSmallest));
                 }
             } else {
                 console.warn("Missing price for:", game.steamAppId);
+                    $(gameElement).append('<div style="position: absolute; top: 0; right: 15px;"><br>Ratio: {0}</div>'.format(tradeRatioSmallest));
             }
         });
 
