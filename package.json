@@ -27,6 +27,10 @@
     "grunt-files-to-javascript-variables": "~0.2",
     "grunt-jscs": "~3.0",
     "grunt-rollup": "^8.1.0",
-    "load-grunt-tasks": "~3.5"
-  }
+    "jquery": "^3.2.1",
+    "load-grunt-tasks": "~3.5",
+    "rollup-plugin-commonjs": "^8.2.6",
+    "rollup-plugin-node-resolve": "^3.0.0"
+  },
+  "dependencies": {}
 }

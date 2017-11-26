@@ -1,9 +1,11 @@
-/* global console */
+import Router from './modules/router';
+import controllers from './controllers/controllers';
 
-// !import constants from './constants';
+var router = new Router();
+controllers.forEach(controller => {
+	'use strict';
 
-import variables from '../generated/variables.pass2';
+	router.registerRoutes(controller.routes);
+});
 
-// !import format from './module.string.format';
-
-console.log(variables);
+router.route();
