@@ -1,0 +1,32 @@
+{
+  "name": "barter-vg-enhancer",
+  "version": "0.5.0",
+  "description": "Summarizes and compares all attributes in an offer for easy comparison of offer value",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexschrod/barter-vg-enhancer.git"
+  },
+  "author": "Alexander Krivács Schrøder",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/alexschrod/barter-vg-enhancer/issues"
+  },
+  "homepage": "https://github.com/alexschrod/barter-vg-enhancer#readme",
+  "devDependencies": {
+    "grunt": "~1.0.1",
+    "grunt-contrib-compass": "~1.1",
+    "grunt-contrib-concat": "~1.0",
+    "grunt-contrib-htmlmin": "~2.3",
+    "grunt-contrib-jshint": "~1.1",
+    "grunt-contrib-uglify": "git://github.com/gruntjs/grunt-contrib-uglify.git#harmony",
+    "grunt-contrib-watch": "~1.0",
+    "grunt-files-to-javascript-variables": "~0.2",
+    "grunt-jscs": "~3.0",
+    "grunt-rollup": "^8.1.0",
+    "load-grunt-tasks": "~3.5"
+  }
+}

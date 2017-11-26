@@ -1,0 +1,31 @@
+{
+    "esversion": 6,
+    "bitwise": true,
+    "curly": true,
+    "eqeqeq": true,
+    "forin": true,
+    "freeze": true,
+    "futurehostile": true,
+    "globals": {
+        "angular": true,
+        "GM_info": true,
+        "GM_xmlhttpRequest": true,
+        "GM_getValue": true,
+        "GM_setValue": true,
+        "unsafeWindow": true
+    },
+    "latedef": true,
+    "nocomma": true,
+    "nonbsp": true,
+    "nonew": true,
+    "notypeof": true,
+    "quotmark": "single",
+    "shadow": "outer",
+    "singleGroups": true,
+    "strict": true,
+    "undef": true,
+    "unused": true,
+    
+    "browser": true,
+    "jquery": true
+}
