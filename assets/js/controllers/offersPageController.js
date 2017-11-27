@@ -240,7 +240,6 @@ export default class OffersPageController {
 
 	index() {
 		Http.get(`${window.location.href}json`, (result, response) => {
-			console.debug(result, response);
 			if (!result) {
 				console.error('Failed getting offer data from barter.vg');
 				return;
@@ -286,11 +285,10 @@ export default class OffersPageController {
 					allValues.html('Fetching prices failed!');
 					return;
 				}
-				console.log(gamePrices);
 				
-				// jscs:disable requireCamelCaseOrUpperCaseIdentifiers
-				for (let gamePriceIndex in gamePrices) {
-					if (gamePrices.hasOwnProperty(gamePriceIndex)) {
+					// jscs:disable requireCamelCaseOrUpperCaseIdentifiers
+					for (let gamePriceIndex in gamePrices) {
+						if (gamePrices.hasOwnProperty(gamePriceIndex)) {
 						if (!currency) {
 							currency = gamePrices[gamePriceIndex].prices.currency;
 						}
@@ -314,14 +312,14 @@ export default class OffersPageController {
 							toTotal += gamePricesInfo.initial;
 							toDiscountedTotal += gamePricesInfo.final;
 						}
+						}
 					}
-				}
-				// jscs:enable requireCamelCaseOrUpperCaseIdentifiers
+					// jscs:enable requireCamelCaseOrUpperCaseIdentifiers
 
-				fromTotalValue.html(format('{0} {2} ({1} {2})', (fromTotal / 100.0).toFixed(2), (fromDiscountedTotal / 100.00).toFixed(2), currency));
-				fromAverageValue.html(format('{0} {2} ({1} {2})', (fromTotal / fromGames.length / 100.0).toFixed(2), (fromDiscountedTotal / fromGames.length / 100.0).toFixed(2), currency));
-				toTotalValue.html(format('{0} {2} ({1} {2})', (toTotal / 100.0).toFixed(2), (toDiscountedTotal / 100.0).toFixed(2), currency));
-				toAverageValue.html(format('{0} {2} ({1} {2})', (toTotal / toGames.length / 100.0).toFixed(2), (toDiscountedTotal / toGames.length / 100.0).toFixed(2), currency));
+				fromTotalValue.html(format('{0} {2} ({1} {2})', (fromDiscountedTotal / 100.00).toFixed(2), (fromTotal / 100.0).toFixed(2), currency));
+				fromAverageValue.html(format('{0} {2} ({1} {2})', (fromDiscountedTotal / fromGames.length / 100.0).toFixed(2), (fromTotal / fromGames.length / 100.0).toFixed(2), currency));
+				toTotalValue.html(format('{0} {2} ({1} {2})', (toDiscountedTotal / 100.0).toFixed(2), (toTotal / 100.0).toFixed(2), currency));
+				toAverageValue.html(format('{0} {2} ({1} {2})', (toDiscountedTotal / toGames.length / 100.0).toFixed(2), (toTotal / toGames.length / 100.0).toFixed(2), currency));
 
 			});
 			

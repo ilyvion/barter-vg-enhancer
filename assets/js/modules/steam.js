@@ -34,7 +34,7 @@ export default class Steam {
 			steamAppIds.splice(index, 1);
 		});
 		if (steamAppIds.length === 0 || steamAppIds.length === 1 && steamAppIds[0] === null) {
-			console.debug('all prices cached, no API call necessary!');
+			// All prices cached, no API call necessary
 			callback(true, gamePrices);
 			return;
 		}
