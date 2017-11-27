@@ -1,6 +1,6 @@
 {
   "name": "barter-vg-enhancer",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Summarizes and compares all attributes in an offer for easy comparison of offer value",
   "main": "app.js",
   "scripts": {
