@@ -1,3 +1,4 @@
+import $ from 'jquery';
 
 const APPLICATION_JSON = 'application/json';
 const JSON_PROTECTION_PREFIX = /^\)\]\}',?\n/;

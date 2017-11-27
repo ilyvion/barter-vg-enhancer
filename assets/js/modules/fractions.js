@@ -1,3 +1,5 @@
+import $ from 'jquery';
+
 function realToFraction(value, error) {
 	'use strict';
 	

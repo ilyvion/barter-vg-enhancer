@@ -1,7 +1,9 @@
-/* global console */
+import $ from 'jquery';
 
-import Greasemonkey from './module.greasemonkey';
-import Http from './module.http';
+import Greasemonkey from './greasemonkey';
+import Http from './http';
+
+/* global console */
 
 export default class Steam {
 	static getPricesFor(steamAppIds, callback) {

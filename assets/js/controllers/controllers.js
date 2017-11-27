@@ -1,3 +1,3 @@
 import OffersPageController from './offersPageController';
 
-export default [ OffersPageController ];
+export default [OffersPageController];

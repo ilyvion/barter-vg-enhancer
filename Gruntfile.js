@@ -67,10 +67,10 @@ module.exports = function (grunt) {
 				jshintrc: '.jshintrc',
 				verbose: true
 			},
-			all: ['Gruntfile.js', 'assets/js/*.js']
+			all: ['Gruntfile.js', 'assets/js/**/*.js']
 		},
 		jscs: {
-			src: 'assets/js/*.js',
+			src: 'assets/js/**/*.js',
 			options: {
 				config: '.jscsrc',
 				fix: false
@@ -85,7 +85,7 @@ module.exports = function (grunt) {
 				src: [
 					'assets/templates/variables.pre.template',
 					'assets/generated/css.variables.pass1.js',
-					'assets/generated/angular.variables.pass1.js',
+					'assets/generated/html.variables.pass1.js',
 					'assets/templates/variables.post.template'
 				],
 				dest: 'assets/generated/variables.pass2.js'
@@ -120,13 +120,13 @@ module.exports = function (grunt) {
 					outputFile: 'assets/generated/css.variables.pass1.js'
 				}
 			},
-			angularTemplates: {
+			htmlTemplates: {
 				options: {
 					inputFilesFolder: 'assets/generated',
 					inputFileExtension: 'html',
 					outputBaseFile: 'assets/templates/variables.empty.template',
-					outputBaseFileVariable: 'variables.angular',
-					outputFile: 'assets/generated/angular.variables.pass1.js'
+					outputBaseFileVariable: 'variables.html',
+					outputFile: 'assets/generated/html.variables.pass1.js'
 				}
 			}
 		},
@@ -137,7 +137,8 @@ module.exports = function (grunt) {
 					collapseWhitespace: true
 				},
 				files: {
-					//'assets/generated/output.html': 'assets/templates/input.html'
+					'assets/generated/tradeSummary.html': 'assets/templates/tradeSummary.html',
+					'assets/generated/gameDetails.html': 'assets/templates/gameDetails.html'
 				}
 			}
 		},
@@ -166,8 +167,8 @@ module.exports = function (grunt) {
 	grunt.registerTask('build', [
 		'jshint',             // Check for lint
 		'jscs',               // Check code style
-		//'compass',            // Compile CSS
-		//'htmlmin',            // Minify HTML templates
+		'compass',            // Compile CSS
+		'htmlmin',            // Minify HTML templates
 		'filesToJavascript',  // Convert HTML templates to JS variables
 		'concat:variables',   // Create finished variable.pass2.js file
 		'rollup:main',        // Rollup all the javascript files into one

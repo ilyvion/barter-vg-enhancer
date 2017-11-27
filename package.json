@@ -1,6 +1,6 @@
 {
   "name": "barter-vg-enhancer",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Summarizes and compares all attributes in an offer for easy comparison of offer value",
   "main": "app.js",
   "scripts": {
@@ -24,7 +24,7 @@
     "grunt-contrib-jshint": "~1.1",
     "grunt-contrib-uglify": "git://github.com/gruntjs/grunt-contrib-uglify.git#harmony",
     "grunt-contrib-watch": "~1.0",
-    "grunt-files-to-javascript-variables": "~0.2",
+    "grunt-files-to-javascript-variables": "git://github.com/alexschrod/grunt-files-to-javascript-variables.git#master",
     "grunt-jscs": "~3.0",
     "grunt-rollup": "^8.1.0",
     "jquery": "^3.2.1",

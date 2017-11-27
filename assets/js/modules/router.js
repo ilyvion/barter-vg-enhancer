@@ -1,10 +1,9 @@
- export default class Router {
+export default class Router {
 	constructor() {
 		this.routes = [];
 	}
 
 	registerRoutes(routes) {
-		console.log(routes);
 		var self = this;
 		routes.forEach(route => {
 			self.routes.push(route);
@@ -39,9 +38,9 @@
 
 		return false;
 	}
- }
+}
  
- export class Route {
+export class Route {
 	constructor(regex, controller, action, predicate) {
 		this._regex = regex;
 		this._controller = controller;
@@ -66,6 +65,6 @@
 	}
 
 	get hasPredicate() {
-		return !!this._predicate;
+		return this._predicate !== null;
 	}
- }	
+}
