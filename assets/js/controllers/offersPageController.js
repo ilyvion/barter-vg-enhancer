@@ -230,7 +230,7 @@ export default class OffersPageController {
 	static get routes() {
 		return [
 			new Route(
-				/https:\/\/barter\.vg\/u\/.+\/o\/.+\//,
+				/^https:\/\/barter\.vg\/u\/.+\/o\/.+\/$/,
 				this,
 				this.prototype.index,
 				() => $('.statusCurrent').text() !== 'Creating...'
@@ -278,43 +278,50 @@ export default class OffersPageController {
 			let toTotal = 0;
 			let toDiscountedTotal = 0;
 			let currency = null;
-			const steamIds = gameOffers.map(go => go.steamId);
+			const steamIds = gameOffers.map(go => go.steamId).filter(steamId => steamId !== null);
 			Steam.getPricesFor(steamIds, (priceResult, gamePrices) => {
 				if (!priceResult) {
 					console.error('Error fetching game prices from Steam');
-					allValues.html('Fetching prices failed!');
-					return;
-				}
-				
+					allValues.html('Fetching prices failed!').css('color', 'red');
+				} else {
 					// jscs:disable requireCamelCaseOrUpperCaseIdentifiers
 					for (let gamePriceIndex in gamePrices) {
 						if (gamePrices.hasOwnProperty(gamePriceIndex)) {
-						if (!currency) {
-							currency = gamePrices[gamePriceIndex].prices.currency;
-						}
+							if (!currency) {
+								currency = gamePrices[gamePriceIndex].prices.currency;
+							}
 
-						const gameOffer = gameOffers.find(go => go.steamId === gamePriceIndex);
-						const gamePricesInfo = gamePrices[gamePriceIndex].prices;
-						gameOffer.prices = gamePricesInfo;
+							const gameOffer = gameOffers.find(go => go.steamId === gamePriceIndex);
+							const gamePricesInfo = gamePrices[gamePriceIndex].prices;
+							gameOffer.prices = gamePricesInfo;
 
-						if (gamePricesInfo.final === 0) {
-							$(gameOffer.steamStorePriceElement).html('Free').css('color', 'green');
-						} else if (gamePricesInfo.discount_percent === 0) {
-							$(gameOffer.steamStorePriceElement).html(format('{0} {1}', gamePricesInfo.final / 100.0, currency));
-						} else {
-							$(gameOffer.steamStorePriceElement).html(format('{0} {1} ({2}% off)', gamePricesInfo.final / 100.0, currency, gamePricesInfo.discount_percent));
-						}
+							if (gamePricesInfo.final === 0) {
+								$(gameOffer.steamStorePriceElement).html('Free').css('color', 'green');
+							} else if (gamePricesInfo.discount_percent === 0) {
+								$(gameOffer.steamStorePriceElement).html(format('{0} {1}', gamePricesInfo.final / 100.0, currency));
+							} else {
+								$(gameOffer.steamStorePriceElement).html(format('{0} {1} ({2}% off)', gamePricesInfo.final / 100.0, currency, gamePricesInfo.discount_percent));
+							}
 
-						if (gameOffer.type === 'from') {
-							fromTotal += gamePricesInfo.initial;
-							fromDiscountedTotal += gamePricesInfo.final;
-						} else {
-							toTotal += gamePricesInfo.initial;
-							toDiscountedTotal += gamePricesInfo.final;
-						}
+							if (gameOffer.type === 'from') {
+								fromTotal += gamePricesInfo.initial;
+								fromDiscountedTotal += gamePricesInfo.final;
+							} else {
+								toTotal += gamePricesInfo.initial;
+								toDiscountedTotal += gamePricesInfo.final;
+							}
 						}
 					}
 					// jscs:enable requireCamelCaseOrUpperCaseIdentifiers
+				}
+
+				gameOffers.filter(go => go.steamId === null).forEach(go => {
+					if (priceResult) {
+						$(go.steamStorePriceElement).html('N/A').css('color', 'darkgray');
+					} else {
+						$(go.steamStorePriceElement).html('Fetching prices failed!').css('color', 'red');
+					}
+				});
 
 				fromTotalValue.html(format('{0} {2} ({1} {2})', (fromDiscountedTotal / 100.00).toFixed(2), (fromTotal / 100.0).toFixed(2), currency));
 				fromAverageValue.html(format('{0} {2} ({1} {2})', (fromDiscountedTotal / fromGames.length / 100.0).toFixed(2), (fromTotal / fromGames.length / 100.0).toFixed(2), currency));
