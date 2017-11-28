@@ -23,6 +23,7 @@ var userScriptBanner =
 // @description  Summarizes and compares all attributes in an offer for easy comparison of offer value
 // @homepage     https://github.com/alexschrod/barter-vg-enhancer
 // @author       Alexander Krivács Schrøder
+// @updateURL    https://alexanderschroeder.net/userscripts/barter-vg-enhancer.meta.js
 // @downloadURL  https://alexanderschroeder.net/userscripts/barter-vg-enhancer.user.js
 // @supportURL   https://github.com/alexschrod/barter-vg-enhancer/issues
 // @match        https://barter.vg/*

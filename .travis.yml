@@ -9,14 +9,17 @@ before_install:
 install:
 - npm update -g
 - npm install
-script: grunt build
+script:
+- grunt build
+- npm run print-userscript-banner
 deploy:
   provider: releases
   api_key:
     secure: Q8NzIXhCiJEkiG+nnhpcm3KZplnLN0y65hpWkxWYY3Dmrkx2/PMSgF/Pu3vm+LrGil0Qc4e4PNpkhO+0stmWH1UAoRfiSk42a5eMKUgme3gHUlLFNNYpz6Ad4YRS8NcEZ9x3Wz4xB52iMsVp7DuBqoDLBVRYkwOTIM236N8Ha7Q6KgL9pn75aXzqfSkQbW6D8jYPTLghMm1dxtckdZ99YwQrBl3Ykc8Vb7IktWKKHmjgJ6/bXX0c5N5WuKydVeiOqmAKqdBz3B2HLwUIL8QTLprpxL0CYZJuQxiUlf+a6ahSZ9/z/b9za4CBpT51XjmMn01hFsGTIjYsTQz58jxCZh7qCz3yyZpuKwIXrcPDFy2ic97raTs71HXY+9alQ+XFYECcw/NYXOrZs/PJZwTgVrlzVteNrjlNonG3LjrxV1wDg9ahd5B8dpeYcPVawoQahK8btUx4eT2lC22m/pv12W5xFbK3KC70HoMaiC0YO6eZXeo8is5fcz2ZEsADg1YYjIIV7Liw6PFUREHiw4mK40WMYoWvsjp6LSE56h9cUsScbw3nbf4KdDoU3k9UmO2pn44vkRFPFZuMDSnyGaRIm13H+eoWmDRWYAvWkLaNNRm1XcJbPzwZkkTutfXZWALVjsU6uKiwS0zYEr2MbI5fB//MO9dvPGSHwlmDXXMC2Lg=
   file:
-    - dist/barter-vg-enhancer.min.user.js
-    - dist/barter-vg-enhancer.user.js
+  - dist/barter-vg-enhancer.min.user.js
+  - dist/barter-vg-enhancer.user.js
+  - dist/barter-vg-enhancer.meta.js
   skip_cleanup: true
   on:
     repo: alexschrod/barter-vg-enhancer
